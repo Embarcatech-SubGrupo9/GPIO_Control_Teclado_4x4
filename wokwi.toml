@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+firmware = 'build/GPIO_Control_Teclado_4x4.uf2'
+elf = 'build/GPIO_Control_Teclado_4x4.elf'
