@@ -1,5 +1,3 @@
-
-```markdown
 # Controle de Pinos GPIO com Teclado Matricial  
 Projeto desenvolvido como parte da **Atividade 1** do programa **Embarcatech**, com o objetivo de controlar pinos GPIO utilizando um teclado matricial 4x4 no microcontrolador Raspberry Pi Pico W, simulando LEDs RGB e um buzzer.
 
@@ -22,11 +20,11 @@ Com o auxílio do simulador de eletrônica **Wokwi**, o teclado 4x4 será utiliz
 ## Como Executar o Projeto  
 1. Clone este repositório:  
    ```bash
-   git clone https://github.com/seu-usuario/seu-repositorio.git
+   git clone https://github.com/Embarcatech-SubGrupo9/GPIO_Control_Teclado_4x4.git
    ```  
 2. Acesse o diretório do projeto:  
    ```bash
-   cd seu-repositorio
+   cd GPIO_Control_Teclado_4x4-main
    ```  
 3. Certifique-se de ter o Pico SDK configurado no ambiente de desenvolvimento.  
 4. Compile o programa:  
