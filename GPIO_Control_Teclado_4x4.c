@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "pico/stdlib.h"
 
 const int colunas = 4;
@@ -18,10 +17,15 @@ const char mapa_tecla[4][4] = {
 
 int main()
 {
-    stdio_init_all();
+    uint8_t operado = 0;
     while (true)
     {
-        printf("Hello, Wokwi!\n");
-        sleep_ms(250);
+        switch (operado)
+        {
+        case :
+            break;
+        default:
+            break;
+        }
     }
 }
