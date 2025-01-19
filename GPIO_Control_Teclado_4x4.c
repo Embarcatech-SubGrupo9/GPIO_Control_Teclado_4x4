@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include "pico/stdlib.h"
+#include "hardware/pwm.h"
 
 // Constantes
 const int colunas = 4;
@@ -15,21 +15,26 @@ const char mapa_tecla[4][4] = {
     {'1', '2', '3', 'A'},
     {'4', '5', '6', 'B'},
     {'7', '8', '9', 'C'},
-    {'*', '0', '#', 'D'}};
+    {'*', '0', '#', 'D'}
+};
 
 // Protótipos das funções
 void inicializar_pinos();
 void controlar_leds(char tecla);
 char verificar_tecla();
+void tocar_buzzer(uint32_t faixa, uint32_t canal, uint32_t freguencia, uint32_t duracao);
 
 int main()
 {
-    stdio_init_all();
     inicializar_pinos();
+    uint32_t numero_faixa = pwm_gpio_to_slice_num(buzzer_pin);//Obtendo o número da faixa do PWM
+    uint32_t canal = pwm_gpio_to_channel(buzzer_pin);//Obtendo o canal do PWM
 
+    char tecla = '\0';
+  
     while (true)
     {
-        char tecla = verificar_tecla();
+        tecla = verificar_tecla();
         if (tecla != '\0')
         {
             controlar_leds(tecla);
@@ -79,6 +84,9 @@ void inicializar_pinos()
         gpio_set_dir(linha_pins[i], GPIO_IN);
         gpio_pull_up(linha_pins[i]);
     }
+    //Iniciando o pino para acionamento do buzzer
+    gpio_init(buzzer_pin);
+    gpio_set_function(buzzer_pin, GPIO_FUNC_PWM);
 }
 
 // Função para controlar os LEDs
@@ -107,4 +115,21 @@ void controlar_leds(char tecla)
             gpio_put(led_pin[i], 1);
         }
     }
+}
+
+//Função para acionamento do buzzer
+void tocar_buzzer(uint32_t FAIXA, uint32_t CANAL, uint32_t freguencia, uint32_t duracao){
+    uint32_t Freq_clock = 125000000;
+    uint32_t divisor_clock = Freq_clock / (freguencia * 4096);
+    pwm_set_clkdiv(FAIXA, divisor_clock);
+
+    uint16_t level = 2048;
+    pwm_set_gpio_level(buzzer_pin, level);
+    pwm_set_wrap(FAIXA, 4095);
+    pwm_set_chan_level(FAIXA, CANAL, level);
+    pwm_set_enabled(FAIXA, true);
+
+    sleep_ms(duracao);
+
+    pwm_set_enabled(FAIXA, 0);
 }
