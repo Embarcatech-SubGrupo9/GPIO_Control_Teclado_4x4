@@ -28,6 +28,7 @@ void tocar_buzzer(uint32_t FAIXA, uint32_t CANAL, uint32_t freguencia, uint32_t 
 int main()
 {
     uint8_t i = 0;
+
     uint32_t numero_faixa = pwm_gpio_to_slice_num(buzzer_pin);//Obtendo o número da faixa do PWM
     uint32_t canal = pwm_gpio_to_channel(buzzer_pin);//Obtendo o canal do PWM
 
