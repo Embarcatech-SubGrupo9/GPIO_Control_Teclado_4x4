@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
+#include "hardware/pwm.h"
 
 // Constantes
 const int colunas = 4;
@@ -22,13 +23,13 @@ const char mapa_tecla[4][4] = {
 void inicializar_pinos();
 void controlar_leds(char tecla);
 char verificar_tecla();
-void tocar_buzzer(uint16_t FREGUENCIA, uint16_t DURACAO);
+void tocar_buzzer(uint32_t FAIXA, uint32_t CANAL, uint32_t freguencia, uint32_t duracao);
 
 int main()
 {
     uint8_t i = 0;
-    uint16_t freguencia = 1000; // Exemplo: 1kHz
-    uint16_t duracao = 500;     // Exemplo: 500ms
+    uint32_t numero_faixa = pwm_gpio_to_slice_num(buzzer_pin);//Obtendo o número da faixa do PWM
+    uint32_t canal = pwm_gpio_to_channel(buzzer_pin);//Obtendo o canal do PWM
 
     inicializar_pinos();
     stdio_init_all();
@@ -40,7 +41,10 @@ int main()
         {
         case '#':
             printf("Entrou na opção #\n");
-            tocar_buzzer(freguencia, duracao);
+            for(i = 0; i < 4; i++){
+                tocar_buzzer(numero_faixa, canal, 1000, 500);
+                tocar_buzzer(numero_faixa, canal, 600, 500);
+            }
             sleep_ms(100);
             break;
         case 'A':
@@ -71,25 +75,6 @@ int main()
     return 0;
 }
 
-// Função para verificar qual tecla foi pressionada
-char verificar_tecla()
-{
-    for (int i = 0; i < linhas; i++)
-    {
-        gpio_put(linha_pins[i], 1);
-        for (int j = 0; j < colunas; j++)
-        {
-            if (gpio_get(coluna_pins[j]))
-            {
-                gpio_put(linha_pins[i], 0);
-                return mapa_tecla[i][j];
-            }
-        }
-        gpio_put(linha_pins[i], 0);
-    }
-    return '\0'; // Retorna '\0' se nenhuma tecla for pressionada
-}
-
 // Função para inicializar os pinos
 void inicializar_pinos()
 { // Inicializando as colunas do teclado matricial
@@ -118,8 +103,29 @@ void inicializar_pinos()
 
     // Inicializando o pino do buzzer
     gpio_init(buzzer_pin);
-    gpio_set_dir(buzzer_pin, GPIO_OUT);
+    gpio_set_function(buzzer_pin, GPIO_FUNC_PWM);
 }
+
+// Função para verificar qual tecla foi pressionada
+char verificar_tecla()
+{
+    for (int i = 0; i < linhas; i++)
+    {
+        gpio_put(linha_pins[i], 1);
+        for (int j = 0; j < colunas; j++)
+        {
+            if (gpio_get(coluna_pins[j]))
+            {
+                gpio_put(linha_pins[i], 0);
+                return mapa_tecla[i][j];
+            }
+        }
+        gpio_put(linha_pins[i], 0);
+    }
+    return '\0'; // Retorna '\0' se nenhuma tecla for pressionada
+}
+
+
 
 // Função para controlar os LEDs
 void controlar_leds(char tecla)
@@ -151,17 +157,18 @@ void controlar_leds(char tecla)
 }
 
 // Função para acionamento do buzzer
-void tocar_buzzer(uint16_t FREGUENCIA, uint16_t DURACAO)
-{
-    uint32_t atraso = 1000000 / (2 * FREGUENCIA);
-    uint32_t ciclos = (FREGUENCIA * DURACAO) / 1000;
-    uint16_t i;
+void tocar_buzzer(uint32_t FAIXA, uint32_t CANAL, uint32_t freguencia, uint32_t duracao){
+    uint32_t Freq_clock = 133000000;
+    uint32_t divisor_clock = Freq_clock / (freguencia * 4096);
+    pwm_set_clkdiv(FAIXA, divisor_clock);
 
-    for (i = 0; i < ciclos; i++)
-    {
-        gpio_put(buzzer_pin, 1);
-        sleep_us(atraso);
-        gpio_put(buzzer_pin, 0);
-        sleep_us(atraso);
-    }
+    uint16_t level = 2048;
+    pwm_set_gpio_level(buzzer_pin, level);
+    pwm_set_wrap(FAIXA, 4095);
+    pwm_set_chan_level(FAIXA, CANAL, level);
+    pwm_set_enabled(FAIXA, true);
+
+    sleep_ms(duracao);
+
+    pwm_set_enabled(FAIXA, 0);
 }
