@@ -28,11 +28,9 @@ void tocar_buzzer(uint32_t FAIXA, uint32_t CANAL, uint32_t freguencia, uint32_t 
 int main()
 {
     uint8_t i = 0;
-    uint32_t numero_faixa = pwm_gpio_to_slice_num(buzzer_pin); // Obtendo o número da faixa do PWM
-    uint32_t canal = pwm_gpio_to_channel(buzzer_pin);          // Obtendo o canal do PWM
 
-    uint16_t freguencia = 1000; // Exemplo: 1kHz
-    uint16_t duracao = 500;     // Exemplo: 500ms
+    uint32_t numero_faixa = pwm_gpio_to_slice_num(buzzer_pin);//Obtendo o número da faixa do PWM
+    uint32_t canal = pwm_gpio_to_channel(buzzer_pin);//Obtendo o canal do PWM
 
     inicializar_pinos();
     stdio_init_all();
@@ -44,7 +42,10 @@ int main()
         {
         case '#':
             printf("Entrou na opção #\n");
-            tocar_buzzer(numero_faixa, canal, freguencia, duracao);
+            for(i = 0; i < 4; i++){
+                tocar_buzzer(numero_faixa, canal, 1000, 500);
+                tocar_buzzer(numero_faixa, canal, 600, 500);
+            }
             sleep_ms(100);
             break;
         case 'A':
@@ -73,25 +74,6 @@ int main()
         }
     }
     return 0;
-}
-
-// Função para verificar qual tecla foi pressionada
-char verificar_tecla()
-{
-    for (int i = 0; i < linhas; i++)
-    {
-        gpio_put(linha_pins[i], 1);
-        for (int j = 0; j < colunas; j++)
-        {
-            if (gpio_get(coluna_pins[j]))
-            {
-                gpio_put(linha_pins[i], 0);
-                return mapa_tecla[i][j];
-            }
-        }
-        gpio_put(linha_pins[i], 0);
-    }
-    return '\0'; // Retorna '\0' se nenhuma tecla for pressionada
 }
 
 // Função para inicializar os pinos
@@ -125,6 +107,27 @@ void inicializar_pinos()
     gpio_set_function(buzzer_pin, GPIO_FUNC_PWM);
 }
 
+// Função para verificar qual tecla foi pressionada
+char verificar_tecla()
+{
+    for (int i = 0; i < linhas; i++)
+    {
+        gpio_put(linha_pins[i], 1);
+        for (int j = 0; j < colunas; j++)
+        {
+            if (gpio_get(coluna_pins[j]))
+            {
+                gpio_put(linha_pins[i], 0);
+                return mapa_tecla[i][j];
+            }
+        }
+        gpio_put(linha_pins[i], 0);
+    }
+    return '\0'; // Retorna '\0' se nenhuma tecla for pressionada
+}
+
+
+
 // Função para controlar os LEDs
 void controlar_leds(char tecla)
 {
@@ -154,25 +157,19 @@ void controlar_leds(char tecla)
     }
 }
 
-// Função para acionamento do buzzer
-void tocar_buzzer(uint32_t FAIXA, uint32_t CANAL, uint32_t freguencia, uint32_t duracao)
-{
-    uint32_t Freq_clock = 125000000;                           // Frequência do clock padrão da RP2040
-    uint32_t divisor_clock = (Freq_clock / freguencia) / 4096; // Divisor correto do clock
+// Função para acionamento do buzzer através do PWM
+void tocar_buzzer(uint32_t FAIXA, uint32_t CANAL, uint32_t freguencia, uint32_t duracao){
+    uint32_t Freq_clock = 133000000;
+    uint32_t divisor_clock = Freq_clock / (freguencia * 4096);
+    pwm_set_clkdiv(FAIXA, divisor_clock);
 
-    // Configurando o PWM
-    pwm_config config = pwm_get_default_config();
-    pwm_config_set_clkdiv(&config, divisor_clock);
-    pwm_init(FAIXA, &config, true);
-
-    uint16_t level = 2048; // Nível do duty cycle (50%)
+    uint16_t level = 2048;
     pwm_set_gpio_level(buzzer_pin, level);
     pwm_set_wrap(FAIXA, 4095);
+    pwm_set_chan_level(FAIXA, CANAL, level);
     pwm_set_enabled(FAIXA, true);
 
-    // Tempo de duração do som
     sleep_ms(duracao);
 
-    // Desliga o PWM
-    pwm_set_enabled(FAIXA, false);
+    pwm_set_enabled(FAIXA, 0);
 }
