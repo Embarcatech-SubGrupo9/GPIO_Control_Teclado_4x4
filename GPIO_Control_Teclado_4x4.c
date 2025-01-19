@@ -156,7 +156,7 @@ void controlar_leds(char tecla)
     }
 }
 
-// Função para acionamento do buzzer
+// Função para acionamento do buzzer através do PWM
 void tocar_buzzer(uint32_t FAIXA, uint32_t CANAL, uint32_t freguencia, uint32_t duracao){
     uint32_t Freq_clock = 133000000;
     uint32_t divisor_clock = Freq_clock / (freguencia * 4096);
