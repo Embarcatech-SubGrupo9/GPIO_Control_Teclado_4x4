@@ -88,23 +88,22 @@ void controlar_leds(char tecla)
     {
         gpio_put(led_pin[i], 0);
     }
-    if (tecla == 'A')
+    switch (tecla)
     {
+    case 'A':
         gpio_put(led_pin[0], 1);
-    }
-    else if (tecla == 'B')
-    {
+        break;
+    case 'B':
         gpio_put(led_pin[1], 1);
-    }
-    else if (tecla == 'C')
-    {
+    case 'C':
         gpio_put(led_pin[2], 1);
-    }
-    else if (tecla == 'D')
-    { // Ligar todos os LEDs
+    case 'D':
+        // Ligar todos os LEDs
         for (int i = 0; i < leds; i++)
         {
             gpio_put(led_pin[i], 1);
         }
+    default:
+        break;
     }
 }
