@@ -26,15 +26,26 @@ int main()
 {
     stdio_init_all();
     inicializar_pinos();
+    uint cont = 0;
+    char tecla_temp = '\0';
 
     while (true)
     {
         char tecla = verificar_tecla();
-        if (tecla != '\0')
+
+        // Confere se a tecla continua apertada
+        if (tecla_temp == tecla){
+            cont++;
+        }else{
+            tecla_temp = tecla;
+            cont = 0;
+        }
+
+        // Executa a função se alguma tecla for pressionada por mais de 20 ciclos para contornar o debounce
+        if (tecla != '\0' && cont>=20)
         {
             controlar_leds(tecla);
             printf("Tecla pressionada: %c\n", tecla);
-            sleep_ms(100); // Debounce
         }
     }
 }
