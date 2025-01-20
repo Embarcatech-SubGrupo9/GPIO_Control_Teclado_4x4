@@ -81,13 +81,12 @@ Os seguintes testes básicos foram implementados:
 
 ### Link para o vídeo:
 
-[Apresentação do Projeto](https://link-do-video.com)
+[Apresentação do Projeto]([https://link-do-video.com](https://www.dropbox.com/scl/fi/aczoznzc0ohi6fmcvengn/2025-01-19-22-44-23.mkv?rlkey=mr24ud3lnrdsvvnrouqywpqji&st=xqus8yuc&dl=0))
 
 ## 👥 Equipe de Desenvolvimento
 
 - **Líder**: *Fernando Hali Santos Andrade*
 - **Desenvolvedores**
-- Angela Marim Bosetti
 - Leandro Alves dos Santos
 - Heli Neres Silva
 - Gabriel Adriano de Jesus Reis
