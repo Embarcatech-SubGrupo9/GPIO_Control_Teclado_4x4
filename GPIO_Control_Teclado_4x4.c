@@ -29,8 +29,8 @@ int main()
 {
     uint8_t i = 0;
 
-    uint32_t numero_faixa = pwm_gpio_to_slice_num(buzzer_pin);//Obtendo o número da faixa do PWM
-    uint32_t canal = pwm_gpio_to_channel(buzzer_pin);//Obtendo o canal do PWM
+    uint32_t numero_faixa = pwm_gpio_to_slice_num(buzzer_pin); // Obtendo o número da faixa do PWM
+    uint32_t canal = pwm_gpio_to_channel(buzzer_pin);          // Obtendo o canal do PWM
 
     inicializar_pinos();
     stdio_init_all();
@@ -42,7 +42,8 @@ int main()
         {
         case '#':
             printf("Entrou na opção #\n");
-            for(i = 0; i < 4; i++){
+            for (i = 0; i < 4; i++)
+            {
                 tocar_buzzer(numero_faixa, canal, 1000, 500);
                 tocar_buzzer(numero_faixa, canal, 600, 500);
             }
@@ -126,15 +127,16 @@ char verificar_tecla()
     return '\0'; // Retorna '\0' se nenhuma tecla for pressionada
 }
 
-
-
 // Função para controlar os LEDs
 void controlar_leds(char tecla)
 {
+    // Desligar todos os LEDs inicialmente
     for (int i = 0; i < leds; i++)
     {
         gpio_put(led_pin[i], 0);
     }
+
+    // Ligar o LED correspondente à tecla pressionada
     if (tecla == 'A')
     {
         gpio_put(led_pin[0], 1);
@@ -148,17 +150,27 @@ void controlar_leds(char tecla)
         gpio_put(led_pin[2], 1);
     }
     else if (tecla == 'D')
-    { // Ligar todos os LEDs
-
+    {
+        // Ligar todos os LEDs
         for (int i = 0; i < leds; i++)
         {
             gpio_put(led_pin[i], 1);
         }
     }
+
+    // Aguarda um curto período para que o LED permaneça aceso
+    sleep_ms(500);
+
+    // Desligar todos os LEDs após a ação
+    for (int i = 0; i < leds; i++)
+    {
+        gpio_put(led_pin[i], 0);
+    }
 }
 
 // Função para acionamento do buzzer através do PWM
-void tocar_buzzer(uint32_t FAIXA, uint32_t CANAL, uint32_t freguencia, uint32_t duracao){
+void tocar_buzzer(uint32_t FAIXA, uint32_t CANAL, uint32_t freguencia, uint32_t duracao)
+{
     uint32_t Freq_clock = 133000000;
     uint32_t divisor_clock = Freq_clock / (freguencia * 4096);
     pwm_set_clkdiv(FAIXA, divisor_clock);
